@@ -93,7 +93,7 @@ def get_feature_maps(image, model, layers=None):
         }
 
     features = {}
-    x = Image
+    x = image
     # pytorch pretrained models have dict holding each module in the module
     for name, layer in model._modules.items():
         # passing image through each module layer

@@ -21,12 +21,12 @@ import sys
 import model as m 
 import utils 
 
-def neural_style(content, style):
+def neural_style(content_img, style_img):
 
     device = m.device
 
-    content = utils.load_image(img_1).to(device)
-    style = utils.load_image(img_2, shape=content.shape[-2:]).to(device)
+    content = utils.load_image(content_img).to(device)
+    style = utils.load_image(style_img, shape=content.shape[-2:]).to(device)
 
     model = m.VGG19().network
 
@@ -50,7 +50,7 @@ def neural_style(content, style):
 
 if __name__ == '__main__':
     img_1, img_2 = sys.argv[1], sys.argv[2]
-    neural_style(content=img_1, style=img_2) 
+    neural_style(content_img=img_1, style_img=img_2) 
 
 
     
