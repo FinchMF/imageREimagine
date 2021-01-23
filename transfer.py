@@ -19,9 +19,11 @@ methods of generating alterations - 'third random' image "weights" -- adjusting 
 
 import sys
 import model as m 
-import utils 
+import utils
 
-def neural_style(content_img, style_img, steps=5000):
+
+
+def neural_style(content_img, style_img, target_img=None, steps=5000, outfile=None, verbose=False):
 
     device = m.device
 
@@ -35,7 +37,13 @@ def neural_style(content_img, style_img, steps=5000):
 
     style_grams = {layer: utils.gram_matrix(style_features[layer]) for layer in style_features}
 
-    target = content.clone().requires_grad_(True).to(device)
+    if target_img == None:
+        target = content.clone().requires_grad_(True).to(device)
+    
+    else:
+
+        target = utils.load_image(target_img, shape=content.shape[-2:]).to(device)
+        target = target.requires_grad_(True).to(device)
 
 
     trained_image = utils.train_image(style_grams=style_grams,
@@ -43,9 +51,24 @@ def neural_style(content_img, style_img, steps=5000):
                     model=model,
                     Weights=m.Weights,
                     target=target,
-                    steps=steps)
+                    steps=steps,
+                    verbose=verbose)
 
-    utils.save_image(trained_image=trained_image, filename='trained_image.jpg')
+    if outfile == None:
+
+        filename = 'trained_image.jpg'
+    else:
+
+        filename = outfile
+
+    utils.save_image(trained_image=trained_image, filename=filename)
+
+    if verbose:
+
+        utils.make_training_gif()
+
+    
+        
 
 
 

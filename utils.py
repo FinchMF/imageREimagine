@@ -2,6 +2,10 @@
 from PIL import Image
 from io import BytesIO
 
+import imageio
+import glob
+
+import os
 import requests
 import numpy as np
 import matplotlib.pyplot as plt
@@ -122,14 +126,14 @@ def gram_matrix(tensor):
 
     
 
-def train_image(style_grams, content_features, model, Weights, target, steps=5000, show_every=400):
+def train_image(style_grams, content_features, model, Weights, target, steps=5000, show_every=400, verbose=False):
 
     """
     Trains target image
     """
     # set optimizer
     optimizer = optim.Adam([target], lr=0.003)
-
+    x = 0
     for ii in range(1, steps+1):
         # extract features maps
         target_features = get_feature_maps(target, model)
@@ -163,6 +167,15 @@ def train_image(style_grams, content_features, model, Weights, target, steps=500
             print(f'Total Loss:  {total_loss.item()}')
             plt.imshow(img_convert(target))
             plt.show()
+            
+            if verbose:
+
+                if not os.path.isdir('training'):
+                    
+                    os.mkdir('training')
+
+                plt.imsave(img_convert(target), f'training/training_img_{x}.jpg')
+                x += 1
 
     return img_convert(target)
 
@@ -176,6 +189,19 @@ def save_image(trained_image, filename):
     plt.imsave(filename, trained_image)
 
     print(f'Image saved at {filename}')
+
+
+def make_training_gif():
+
+    filenames = glob.glob('training/*.jpg')
+    images = []
+    for filename in filenames:
+        images.append(imageio.imread(filename))
+    imageio.mimsave('training.gif', images)
+
+    print('Training GIF made')
+
+    
 
 
 
