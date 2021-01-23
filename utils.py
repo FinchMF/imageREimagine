@@ -138,7 +138,7 @@ def train_image(style_grams, content_features, model, Weights, target, steps=500
 
         style_loss = 0
         # calculate style loss
-        for layer in Weights.style_weights:
+        for layer in Weights().style_weights:
             # generate feature map
             target_feature = target_features[layer]
             # generate gram matrix from layer's feature map
@@ -148,11 +148,11 @@ def train_image(style_grams, content_features, model, Weights, target, steps=500
             #  call style gram matrix from 'teacher image'
             style_gram = style_grams[layer]
             # magnify average of error per layer to generate style loss of layer
-            layer_style_loss = Weights.style_weights[layer] * torch.mean((target_gram - style_gram)**2)
+            layer_style_loss = Weights().style_weights[layer] * torch.mean((target_gram - style_gram)**2)
             # add to overall style loss
             style_loss += layer_style_loss / (d * h * w)
         # compute total loss
-        total_loss = Weights.content_weight * content_loss + Weights.style_weight * style_loss
+        total_loss = Weights().content_weight * content_loss + Weights().style_weight * style_loss
         # backpropogate and optimize total loss
         optimizer.zero_grad()
         total_loss.backward()
