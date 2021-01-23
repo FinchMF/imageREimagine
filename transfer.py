@@ -21,7 +21,7 @@ import sys
 import model as m 
 import utils 
 
-def neural_style(content_img, style_img):
+def neural_style(content_img, style_img, steps=5000):
 
     device = m.device
 
@@ -42,7 +42,8 @@ def neural_style(content_img, style_img):
                     content_features=content_features,
                     model=model,
                     Weights=m.Weights,
-                    target=target)
+                    target=target,
+                    steps=steps)
 
     utils.save_image(trained_image=trained_image, filename='trained_image.jpg')
 
