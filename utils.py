@@ -174,7 +174,7 @@ def train_image(style_grams, content_features, model, Weights, target, steps=500
                     
                     os.mkdir('training')
 
-                plt.imsave(img_convert(target), f'training/training_img_{x}.jpg')
+                plt.imsave(f'training/training_img_{x}.jpg', img_convert(target))
                 x += 1
 
     return img_convert(target)
