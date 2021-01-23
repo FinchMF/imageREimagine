@@ -11,6 +11,53 @@ Stlye loss is generated from the style image the target image
 The target image will start with a cloned weights of the content representation (although these could be randomized)
 The target image's weights could also be set from a third image to find a content space between the content image and 'third' image
 
+
+methods of generating alterations - 'third random' image "weights" -- adjusting weight influences on layers -- chosing different layers (change within or per model)
+
 """
+
+
+import sys
+import model as m 
+import utils 
+
+def neural_style(img_1, img_2):
+
+    device = m.device
+
+    content = utils.load_image(img_1).to(device)
+    style = utils.load_image(img_2, shape=content.shape[-2:]).to(device)
+
+    model = m.VGG19.network
+
+    content_features = utils.get_feature_maps(content, model)
+    style_features = utils.get_feature_maps(style, model)
+
+    style_grams = {layer: utils.gram_matrix(style_features[layer]) for layer in style_features}
+
+    target = content.clone().requires_grad_(True).to(device)
+
+
+    trained_image = utils.train_image(style_grams=style_grams,
+                    content_features=content_features,
+                    model=model,
+                    Weights=m.Weights,
+                    target=target)
+
+    utils.save_image(trained_image=trained_image, 'trained_image.jpg')
+
+
+
+if __name__ == '__main__':
+
+    neural_style(img_1=sys.argv[1], img_2=sys.argv[2]) 
+
+
+    
+
+
+
+
+
 
 
