@@ -28,8 +28,7 @@ def neural_style(img_1, img_2):
     content = utils.load_image(img_1).to(device)
     style = utils.load_image(img_2, shape=content.shape[-2:]).to(device)
 
-    model = m.VGG19.net
-    model.to(device)
+    model = m.VGG19().network
 
     content_features = utils.get_feature_maps(content, model)
     style_features = utils.get_feature_maps(style, model)

@@ -13,6 +13,7 @@ class VGG19:
         # freeze network weights
         for param in self.net.parameters():
             param.requires_grad_(False)
+        self.network = self.net.to(device)
         
 
 
