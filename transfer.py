@@ -21,7 +21,7 @@ import sys
 import model as m 
 import utils 
 
-def neural_style(img_1, img_2):
+def neural_style(content, style):
 
     device = m.device
 
@@ -50,7 +50,7 @@ def neural_style(img_1, img_2):
 
 if __name__ == '__main__':
     img_1, img_2 = sys.argv[1], sys.argv[2]
-    neural_style(img_1, img_2) 
+    neural_style(content=img_1, style=img_2) 
 
 
     
