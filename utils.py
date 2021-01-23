@@ -72,7 +72,7 @@ def img_convert(tensor):
 
 
 
-def get_feature_maps(iamge, model, layers=None):
+def get_feature_maps(image, model, layers=None):
 
     """
     Image -> Foward Pass through Model = feature maps for set of layers
