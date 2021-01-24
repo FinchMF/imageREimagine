@@ -24,28 +24,32 @@ import utils
 
 
 def neural_style(content_img, style_img, target_img=None, steps=5000, outfile=None, verbose=False):
-
+    """
+    Set device to GPU or CPU 
+    """
     device = m.device
-
+    # generate content tensor
     content = utils.load_image(content_img).to(device)
+    # generate style tensor - reformat to match content shape
     style = utils.load_image(style_img, shape=content.shape[-2:]).to(device)
-
+    # load pretrained VGG19 and set to device
     model = m.VGG19().network
-
+    # generate content feature map
     content_features = utils.get_feature_maps(content, model)
+    # generate style feature map
     style_features = utils.get_feature_maps(style, model)
-
+    # generate style grams from style feature map
     style_grams = {layer: utils.gram_matrix(style_features[layer]) for layer in style_features}
-
+    # if there is no target image, use the content image to set the weights of the target image
     if target_img == None:
         target = content.clone().requires_grad_(True).to(device)
     
     else:
-
+        # otherwise load target image, generate tensor and map it to content shape
         target = utils.load_image(target_img, shape=content.shape[-2:]).to(device)
         target = target.requires_grad_(True).to(device)
 
-
+    # train target image
     trained_image = utils.train_image(style_grams=style_grams,
                     content_features=content_features,
                     model=model,
@@ -53,7 +57,7 @@ def neural_style(content_img, style_img, target_img=None, steps=5000, outfile=No
                     target=target,
                     steps=steps,
                     verbose=verbose)
-
+    # set for naming output file
     if outfile == None:
 
         filename = 'trained_image.jpg'
@@ -64,7 +68,7 @@ def neural_style(content_img, style_img, target_img=None, steps=5000, outfile=No
     utils.save_image(trained_image=trained_image, filename=filename)
 
     if verbose:
-
+        # generate gif of training process
         utils.make_training_gif()
 
     

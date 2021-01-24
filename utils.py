@@ -169,11 +169,11 @@ def train_image(style_grams, content_features, model, Weights, target, steps=500
             plt.show()
             
             if verbose:
-
+                # look for directory to place all training images
                 if not os.path.isdir('training'):
-                    
+                    # if it is not there, make it
                     os.mkdir('training')
-
+                # save each iteration 
                 plt.imsave(f'training/training_img_{x}.jpg', img_convert(target))
                 x += 1
 
@@ -192,11 +192,16 @@ def save_image(trained_image, filename):
 
 
 def make_training_gif():
-
+    """
+    generate gif of saved training images 
+    """
+    # pull images from training directiory
     filenames = glob.glob('training/*.jpg')
     images = []
     for filename in filenames:
+        # place processed images into list
         images.append(imageio.imread(filename))
+    # save list of images as a motion image
     imageio.mimsave('training.gif', images)
 
     print('Training GIF made')
