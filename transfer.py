@@ -18,6 +18,9 @@ methods of generating alterations - 'third random' image "weights" -- adjusting 
 
 
 import sys
+import os
+import datetime
+import shutil
 import model as m 
 import utils
 
@@ -70,6 +73,26 @@ def neural_style(content_img, style_img, target_img=None, steps=5000, outfile=No
     if verbose:
         # generate gif of training process
         utils.make_training_gif()
+
+        if not os.path.isdir('finished'):
+
+            os.mkdir('finished')
+
+        now = datetime.datetime.now()
+
+        if not os.path.isdir(f'session_{now}'):
+
+            os.mkdir(f'session_{now}')
+
+        shutil.move('training', f'session_{now}/')
+        shutil.move('training.gif', f'session_{now}/')
+        shutil.move('trained_image.jpg', f'session_{now}')
+
+        
+        
+
+
+
 
     
         
