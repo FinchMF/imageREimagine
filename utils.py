@@ -1,4 +1,8 @@
 
+################
+# DEPENDENCIES #
+################
+
 from PIL import Image
 from io import BytesIO
 
@@ -14,7 +18,9 @@ import torch
 import torch.optim as optim
 from torchvision import transforms
 
-
+############
+# UTILTIES #
+############
 
 def load_image(img_path, max_size=400, shape=None):
 
@@ -124,9 +130,33 @@ def gram_matrix(tensor):
 
     return gram
 
-    
 
-def train_image(style_grams, content_features, model, Weights, target, steps=5000, show_every=400, verbose=False):
+def get_style_loss(Weights, target_features, style_grams):
+
+    """
+    Calculate style loss from feature maps and style grams
+    """
+
+    style_loss = 0
+    # calculate style loss
+    for layer in Weights().style_weights:
+        # generate feature map
+        target_feature = target_features[layer]
+        # generate gram matrix from layer's feature map
+        target_gram = gram_matrix(target_feature)
+        # remove batch (translucent dimension)
+        _, d, h, w = target_feature.shape
+        #  call style gram matrix from 'teacher image'
+        style_gram = style_grams[layer]
+        # magnify average of error per layer to generate style loss of layer
+        layer_style_loss = Weights().style_weights[layer] * torch.mean((target_gram - style_gram)**2)
+        # add to overall style loss
+        style_loss += layer_style_loss / (d * h * w)
+
+    return style_loss
+
+
+def train_image(alpha_style_grams, content_features, model, Weights, target, beta_style_grams=None, steps=5000, show_every=400, verbose=False):
 
     """
     Trains target image
@@ -139,24 +169,20 @@ def train_image(style_grams, content_features, model, Weights, target, steps=500
         target_features = get_feature_maps(target, model)
         # calculate content loss on layer conv4_2 of VGG19 - need to change if another model is used
         content_loss = torch.mean((target_features['conv4_2'] - content_features['conv4_2'])**2)
+        # calculate alpha style loss
+        alpha_style_loss = get_style_loss(Weights, target_features, alpha_style_grams)
+        # if there is a second image for style reference, calulate beta style loss
+        if beta_style_grams != None:
 
-        style_loss = 0
-        # calculate style loss
-        for layer in Weights().style_weights:
-            # generate feature map
-            target_feature = target_features[layer]
-            # generate gram matrix from layer's feature map
-            target_gram = gram_matrix(target_feature)
-            # remove batch (translucent dimension)
-            _, d, h, w = target_feature.shape
-            #  call style gram matrix from 'teacher image'
-            style_gram = style_grams[layer]
-            # magnify average of error per layer to generate style loss of layer
-            layer_style_loss = Weights().style_weights[layer] * torch.mean((target_gram - style_gram)**2)
-            # add to overall style loss
-            style_loss += layer_style_loss / (d * h * w)
-        # compute total loss
-        total_loss = Weights().content_weight * content_loss + Weights().style_weight * style_loss
+            beta_style_loss = get_style_loss(Weights, target_features, beta_style_grams)
+            # compute total loss including beta style
+            total_loss = Weights().content_weight * content_loss + Weights().alpha_style_weight * alpha_style_loss + Weights().beta_style_weight * beta_style_loss
+
+        else:
+    
+            # compute total loss
+            total_loss = Weights().content_weight * content_loss + Weights().alpha_style_weight * alpha_style_loss
+
         # backpropogate and optimize total loss
         optimizer.zero_grad()
         total_loss.backward()
@@ -176,6 +202,7 @@ def train_image(style_grams, content_features, model, Weights, target, steps=500
                 # save each iteration 
                 plt.imsave(f'training/training_img_{x}.jpg', img_convert(target))
                 x += 1
+
 
     return img_convert(target)
 

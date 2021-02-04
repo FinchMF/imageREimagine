@@ -33,7 +33,8 @@ class Weights:
         # alpha
         self.content_weight = 1
         # beta
-        self.style_weight = 1e6
+        self.alpha_style_weight = 1e6
+        self.beta_style_weight = 450000 # 45% of 1e6
 
 
 
