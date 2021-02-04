@@ -34,10 +34,10 @@ In Jupyter Notebook:
     import transfer
 
     transfer.neural_style(content_img=img_1,
-                            alpha_style_img=img_2,
-                            beta_style_img=img_3,
-                            steps=10_000_000,
-                            verbose=True)
+                          alpha_style_img=img_2,
+                          beta_style_img=img_3,
+                          steps=10_000_000,
+                          verbose=True)
 
 
 NOTE: step amount used in the examples are not set. Experiment!
