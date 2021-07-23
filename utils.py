@@ -232,8 +232,3 @@ def make_training_gif():
     imageio.mimsave('training.gif', images)
 
     print('Training GIF made')
-
-    
-
-
-

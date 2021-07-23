@@ -114,14 +114,4 @@ def neural_style(content_img, alpha_style_img, beta_style_img=None, target_img=N
 if __name__ == '__main__':
     # generic use case
     img_1, img_2 = sys.argv[1], sys.argv[2]
-    neural_style(content_img=img_1, alpha_style_img=img_2) 
-
-
-    
-
-
-
-
-
-
-
+    neural_style(content_img=img_1, alpha_style_img=img_2)

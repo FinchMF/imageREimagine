@@ -35,10 +35,3 @@ class Weights:
         # beta
         self.alpha_style_weight = 1e6
         self.beta_style_weight = 450000 # 45% of 1e6
-
-
-
-
-        
-
-        
